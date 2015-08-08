@@ -30,12 +30,25 @@
 						dataType: "json",
 						url: "/",
 						success: function(data) {
+							/* Empty the unordered list */
 							$("#status-ajax").empty();
 							console.log("Objects =", data);
+							/* Loop through the API objects */
 							for (var d in data) {
-								$("#status-ajax").append(
-									'<li class="' + data[d].Name + ' ' + data[d].Status + '">' +
-									data[d].Name + ' is <strong>' + data[d].Status + '</strong>.</li>');
+								/* Create a list item node */
+								var list_node = document.createElement('li');
+								list_node.id = data[d].Name;
+								list_node.className = data[d].Status;
+								var list_text = document.createTextNode(data[d].Name + ' is ');
+								list_node.appendChild(list_text);
+								/* Create a status node */
+								var status_node = document.createElement('strong');
+								var status_text = document.createTextNode(data[d].Status);
+								status_node.appendChild(status_text);
+								/* Append a status to a list */
+								list_node.appendChild(status_node);
+								/* Append a list item to the unordered list */
+								document.getElementById("status-ajax").appendChild(list_node);
 							}
 						},
 						complete: function() {
