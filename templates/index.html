@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="description" content="iRO2 Server Status">
+
+		<title>Status</title>
+
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+		<style>
+			#status .online strong { color: #090; }
+			#status .offline strong { color: #900; }
+			#status .unknown strong { color: #999; }
+			#status ul { list-style: none; padding: 0; }
+		</style>
+	</head>
+
+	<body id="status">
+		<h3>iRO2 Server Status</h3>
+		<p>Status is auto-updated every {{ ttl }} seconds.</p>
+		<ul id="status-ajax">
+			<li>Loading...</li>
+		</ul>
+		<script>
+			$(document).ready(function() {
+				(function refresh() {
+					$.ajax({
+						type: "POST",
+						dataType: "json",
+						url: "/",
+						success: function(data) {
+							$("#status-ajax").empty();
+							console.log("Objects =", data);
+							for (var d in data) {
+								$("#status-ajax").append(
+									'<li class="' + data[d].Name + ' ' + data[d].Status + '">' +
+									data[d].Name + ' is <strong>' + data[d].Status + '</strong>.</li>');
+							}
+						},
+						complete: function() {
+							var now = new Date();
+							console.info(now.toLocaleString());
+							setTimeout(refresh, 10000);
+						}
+					});
+				})();
+			});
+		</script>
+	</body>
+</html>
