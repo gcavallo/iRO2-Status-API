@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 # iRO2-Status-API
@@ -8,9 +8,7 @@
 # BSD 3-Clause License http://opensource.org/licenses/BSD-3-Clause
 
 
-from __future__ import print_function
-
-import gevent; gevent.monkey_patch()
+from gevent import monkey; monkey.patch_all()
 import bottle
 import json
 
@@ -36,14 +34,14 @@ def view_status():
 	for s in servers:
 		status = cache.get(s['Name'])
 		if status:
-			print('Reading {0} from redis.'.format(s['Name']))
+			print 'Reading {0} from redis.'.format(s['Name'])
 			s['status'] = status
 		else:
 			server = models.Server(s['Name'], s['Address'], s['Port'])
 			status = server.get_status()
 			cache.set(s['Name'], status, settings.CACHE['TTL'])
 			s['Status'] = status
-			print('Reading {0} from socket.'.format(s['Name']))
+			print 'Reading {0} from socket.'.format(s['Name'])
 
 	bottle.response.content_type = 'application/json'
 	return json.dumps(servers)
