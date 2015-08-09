@@ -9,15 +9,13 @@
 
 
 from gevent import monkey; monkey.patch_all()
-import bottle
-import json
-
+import redis, bottle, arrow
+import time, json, socket
 import settings
-import models
 
 
 servers = settings.SERVERS
-cache = models.Cache(settings.CACHE['Hostname'], settings.CACHE['Port'])
+r = redis.Redis(settings.CACHE['Hostname'], settings.CACHE['Port'])
 bottle.TEMPLATE_PATH.insert(0, 'templates')
 bottle.debug(settings.BOTTLE['Debug'])
 
@@ -25,26 +23,78 @@ bottle.debug(settings.BOTTLE['Debug'])
 @bottle.route('/')
 def index():
 	''' Return index html template on GET requests. '''
-	return bottle.template('index', servers=servers, ttl=settings.CACHE['TTL'])
+	return bottle.template('index', ttl=settings.CACHE['TTL'])
 
 
 @bottle.route('/', method='POST')
 def view_status():
-	''' Return json object on POST requests. '''
+	''' Return the status json string on POST requests. '''
+
+	def get_status(address, port):
+		'''
+		Use a socket connection to get server status.
+
+		:return: Status of the server as "online" or "offline".
+		:rtype: str
+		'''
+		try:
+			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+			s.settimeout(2)
+			s.connect( (address, port) )
+			s.close()
+			return 'online'
+		except:
+			return 'offline'
+
 	for s in servers:
-		status = cache.get(s['Name'])
+		if not s.has_key('Status'):
+			s['Status'] = 'Unknown'
+
+		# Get status from redis cache
+		status = r.get(s['Name'])
 		if status:
-			print 'Reading {0} from redis.'.format(s['Name'])
-			s['status'] = status
-		else:
-			server = models.Server(s['Name'], s['Address'], s['Port'])
-			status = server.get_status()
-			cache.set(s['Name'], status, settings.CACHE['TTL'])
+			s['Source'] = 'Redis'
+			s['Log'] = False
 			s['Status'] = status
-			print 'Reading {0} from socket.'.format(s['Name'])
+
+		# Get status from socket
+		else:
+			s['Source'] = 'Socket'
+			p1 = time.time()
+			status = get_status(s['Address'], s['Port'])
+			p2 = time.time()
+			s['Ping'] = int(round(p2 - p1, 3) * 1000)
+			s['Time'] = arrow.utcnow().to('America/Los_Angeles').format('YYYY-MM-DD HH:mm:ss Z')
+
+			# Status logging
+			if s['Status'] != status:
+				log = {'Time': s['Time'], 'Name': s['Name'], 'Status': status, 'Ping': s['Ping']}
+				r.lpush('log', json.dumps(log))
+				s['Log'] = True
+			else:
+				s['Log'] = False
+
+			# Update status
+			r.set(s['Name'], status, settings.CACHE['TTL'])
+			s['Status'] = status
 
 	bottle.response.content_type = 'application/json'
 	return json.dumps(servers)
+
+
+@bottle.route('/log', method='GET')
+def view_full_log():
+	''' Return log html template on GET requests. '''
+	logs = [json.loads(i) for i in r.lrange('log', 0, -1)]
+	return bottle.template('log', logs=logs)
+
+
+@bottle.route('/log', method='POST')
+def view_log():
+	''' Return the log json string on POST requests. '''
+	bottle.response.content_type = 'application/json'
+	r.ltrim('log', 0, 29)
+	return json.dumps([json.loads(i) for i in r.lrange('log', 0, 4)])
 
 
 if __name__ == '__main__':
