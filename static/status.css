@@ -1,0 +1,5 @@
+#status .online strong { color: #090; }
+#status .offline strong { color: #900; }
+#status .unknown strong { color: #999; }
+#status ul { list-style: none; padding: 0; }
+#status td,th { text-align: left; padding: 0 10px 0 0; }
