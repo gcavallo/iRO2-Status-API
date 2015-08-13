@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="description" content="iRO2 Server Status">
-
-		<title>Log</title>
-
-		<style>
-			#status .online strong { color: #090; }
-			#status .offline strong { color: #900; }
-			#status .unknown strong { color: #999; }
-			#status td,th { text-align: left; padding: 0 10px 0 0;}
-		</style>
-	</head>
-
+% include('header.html', title='Log')
 	<body id="status">
 		<h3>Log</h3>
 		<p>Full log is not automatically updated.</p>
@@ -28,7 +13,7 @@
 			</thead>
 			<tbody>
 			%for log in logs:
-				<tr>
+				<tr class="{{ log['Status'] }}">
 					<td>{{ log['Time'] }}</td>
 					<td>{{ log['Name'] }}</td>
 					<td>{{ log['Status'] }}</td>
@@ -37,6 +22,4 @@
 			%end
 			</tbody>
 		</table>
-		<a href="/">return to status</a>
-	</body>
-</html>
+% include('footer.html')
