@@ -47,17 +47,22 @@ def view_status():
 			return 'offline'
 
 	for s in servers:
+		# Get previous status from redis
 		if not s.has_key('Status'):
-			s['Status'] = 'Unknown'
+			try:
+				log = [json.loads(i) for i in r.lrange('log', 0, 0)][0]
+				s['Status'] = log['Status']
+			except IndexError:
+				s['Status'] = 'Unknown'
 
-		# Get status from redis cache
+		# Get cached status from redis
 		status = r.get(s['Name'])
 		if status:
 			s['Source'] = 'Redis'
 			s['Log'] = False
 			s['Status'] = status
 
-		# Get status from socket
+		# Get current status from socket
 		else:
 			s['Source'] = 'Socket'
 			p1 = time.time()
