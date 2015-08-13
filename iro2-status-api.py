@@ -63,7 +63,10 @@ def view_status():
 			p1 = time.time()
 			status = get_status(s['Address'], s['Port'])
 			p2 = time.time()
-			s['Ping'] = int(round(p2 - p1, 3) * 1000)
+			if status == 'online':
+				s['Ping'] = int(round(p2 - p1, 3) * 1000)
+			else:
+				s['Ping'] = '---'
 			s['Time'] = arrow.utcnow().to('America/Los_Angeles').format('YYYY-MM-DD HH:mm:ss Z')
 
 			# Status logging
