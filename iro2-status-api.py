@@ -31,20 +31,17 @@ def view_status():
 	''' Return the status json string on POST requests. '''
 
 	def get_status(address, port):
-		'''
-		Use a socket connection to get server status.
-
-		:return: Status of the server as "online" or "offline".
-		:rtype: str
-		'''
+		''' Use a socket connection to get server status. '''
 		try:
 			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 			s.settimeout(2)
+			p1 = time.time()
 			s.connect( (address, port) )
+			p2 = time.time()
 			s.close()
-			return 'online'
+			return ('online', int(round(p2 - p1, 3) * 1000))
 		except:
-			return 'offline'
+			return ('offline', '---')
 
 	for s in servers:
 		# Get previous status from redis
@@ -65,13 +62,7 @@ def view_status():
 		# Get current status from socket
 		else:
 			s['Source'] = 'Socket'
-			p1 = time.time()
-			status = get_status(s['Address'], s['Port'])
-			p2 = time.time()
-			if status == 'online':
-				s['Ping'] = int(round(p2 - p1, 3) * 1000)
-			else:
-				s['Ping'] = '---'
+			status, s['Ping'] = get_status(s['Address'], s['Port'])
 			s['Time'] = arrow.utcnow().to('America/Los_Angeles').format('YYYY-MM-DD HH:mm:ss Z')
 
 			# Status logging
