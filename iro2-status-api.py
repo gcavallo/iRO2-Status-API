@@ -69,6 +69,7 @@ def view_status():
 			if s['Status'] != status:
 				log = {'Time': s['Time'], 'Name': s['Name'], 'Status': status, 'Ping': s['Ping']}
 				r.lpush('log', json.dumps(log))
+				r.ltrim('log', 0, 29)
 				s['Log'] = True
 			else:
 				s['Log'] = False
@@ -86,14 +87,6 @@ def view_full_log():
 	''' Return log html template on GET requests. '''
 	logs = [json.loads(i) for i in r.lrange('log', 0, -1)]
 	return bottle.template('log', logs=logs)
-
-
-@bottle.route('/log', method='POST')
-def view_log():
-	''' Return the log json string on POST requests. '''
-	bottle.response.content_type = 'application/json'
-	r.ltrim('log', 0, 29)
-	return json.dumps([json.loads(i) for i in r.lrange('log', 0, 4)])
 
 
 if __name__ == '__main__':
