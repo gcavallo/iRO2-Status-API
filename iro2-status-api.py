@@ -8,9 +8,13 @@
 # BSD 3-Clause License http://opensource.org/licenses/BSD-3-Clause
 
 
+import json, socket
+from datetime import datetime
+
+import redis, bottle
+from pytz import timezone
 from gevent import monkey; monkey.patch_all()
-import redis, bottle, arrow
-import time, json, socket
+
 import settings
 
 
@@ -61,7 +65,8 @@ def view_status():
 		else:
 			s['Source'] = 'Socket'
 			status = get_status(s['Address'], s['Port'])
-			s['Time'] = arrow.utcnow().to('America/Los_Angeles').format('YYYY-MM-DD HH:mm:ss Z')
+			timestamp = datetime.now(timezone('UTC')).astimezone(timezone('America/Los_Angeles'))
+			s['Time'] = timestamp.strftime("%Y-%m-%d %H:%M:%S %Z")
 
 			# Status logging
 			if s['Status'] != status:
