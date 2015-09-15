@@ -35,13 +35,11 @@ def view_status():
 		try:
 			s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 			s.settimeout(2)
-			p1 = time.time()
 			s.connect( (address, port) )
-			p2 = time.time()
 			s.close()
-			return ('online', int(round(p2 - p1, 3) * 1000))
+			return 'online'
 		except:
-			return ('offline', '---')
+			return 'offline'
 
 	for s in servers:
 		# Get previous status from redis
@@ -50,7 +48,7 @@ def view_status():
 				log = [json.loads(i) for i in r.lrange('log', 0, 0)][0]
 				s['Status'] = log['Status']
 			except IndexError:
-				s['Status'] = 'Unknown'
+				s['Status'] = 'unknown'
 
 		# Get cached status from redis
 		status = r.get(s['Name'])
@@ -62,12 +60,12 @@ def view_status():
 		# Get current status from socket
 		else:
 			s['Source'] = 'Socket'
-			status, s['Ping'] = get_status(s['Address'], s['Port'])
+			status = get_status(s['Address'], s['Port'])
 			s['Time'] = arrow.utcnow().to('America/Los_Angeles').format('YYYY-MM-DD HH:mm:ss Z')
 
 			# Status logging
 			if s['Status'] != status:
-				log = {'Time': s['Time'], 'Name': s['Name'], 'Status': status, 'Ping': s['Ping']}
+				log = {'Time': s['Time'], 'Name': s['Name'], 'Status': status}
 				r.lpush('log', json.dumps(log))
 				r.ltrim('log', 0, 29)
 				s['Log'] = True
