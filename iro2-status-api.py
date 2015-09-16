@@ -82,6 +82,7 @@ def view_status():
 			s['Status'] = status
 
 	bottle.response.content_type = 'application/json'
+	bottle.response.set_header('Access-Control-Allow-Origin', '*')
 	return json.dumps(servers)
 
 
