@@ -92,6 +92,12 @@ def view_full_log():
 	return bottle.template('log', logs=logs)
 
 
+@bottle.route('/api', method='GET')
+def view_full_log():
+	''' Return api html template on GET requests. '''
+	return bottle.template('api')
+
+
 if __name__ == '__main__':
 	bottle.run(host=settings.BOTTLE['Hostname'],
 		port=settings.BOTTLE['Port'],

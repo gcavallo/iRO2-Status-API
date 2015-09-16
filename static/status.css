@@ -7,7 +7,7 @@ footer { text-align: center; margin: 15px 0; }
 .online:hover { color: #090; background-color: #BEB; }
 .offline { color: #900; background-color: #ECC; }
 .offline:hover { color: #900; background-color: #EBB; }
-ul { list-style: none; margin: 0 0 15px 0; padding: 0; height: 158px; font-size: 24px; }
+#status-ajax { list-style: none; margin: 0 0 15px 0; padding: 0; height: 158px; font-size: 24px; }
 li { color: #999; padding: 5px; margin: 0 0 2px 0; }
 table { color: #999; width: 100%; margin: 0 0 15px 0; padding: 0; }
 td,th { text-align: left; font-weight: normal; padding: 5px; }
@@ -16,3 +16,4 @@ h3,h4 { color: #333; padding: 5px; margin: 0 0 2px 0; font-size: 24px; font-weig
 p,h5,h6 { color: #999; margin: 0; padding: 5px; font-weight: normal; }
 h5,h6 { font-size: 9px; }
 a,a:visited { color: #009; text-decoration: none; }
+pre { overflow: scroll; }
