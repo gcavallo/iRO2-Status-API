@@ -99,6 +99,12 @@ def view_full_log():
 	return bottle.template('api')
 
 
+if settings.BOTTLE['Debug']:
+	@bottle.route('/static/<filename>')
+	def server_static(filename):
+		return bottle.static_file(filename, root='./static/')
+
+
 if __name__ == '__main__':
 	bottle.run(host=settings.BOTTLE['Hostname'],
 		port=settings.BOTTLE['Port'],
