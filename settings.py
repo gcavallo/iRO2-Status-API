@@ -23,11 +23,6 @@ SERVERS = [
 		'Name': 'Odin',
 		'Address': '128.241.94.47',
 		'Port': 7204
-	},
-	{
-		'Name': 'Freyja',
-		'Address': '128.241.94.49',
-		'Port': 7204
 	}
 ]
 
