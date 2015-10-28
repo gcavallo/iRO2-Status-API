@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # iRO2-Status-API
-# http://github.com/gcavallo/iro2-status-api/
+# https://github.com/gcavallo/iro2-status-api/
 
 # Copyright (c) 2014 by Gabriel Cavallo <gabrielcavallo@mail.com>
 # BSD 3-Clause License http://opensource.org/licenses/BSD-3-Clause
@@ -91,12 +91,6 @@ def view_full_log():
 	''' Return log html template on GET requests. '''
 	logs = [json.loads(i) for i in r.lrange('log', 0, -1)]
 	return bottle.template('log', logs=logs)
-
-
-@bottle.route('/api', method='GET')
-def view_full_log():
-	''' Return api html template on GET requests. '''
-	return bottle.template('api')
 
 
 if settings.BOTTLE['Debug']:
