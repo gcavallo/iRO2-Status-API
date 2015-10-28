@@ -13,8 +13,7 @@ To start using the API, do a POST request at http://status.niceboat-guild.com an
 ```json
 [{"Status": "online", "Name": "Patch", "Address":"patch.playragnarok2.com", "Source": "Redis", "Time": "2015-09-15 16:11:18 PDT", "Port": 80, "Log": false},
 {"Status": "online", "Name": "Login", "Address": "login.playragnarok2.com", "Source": "Redis", "Time": "2015-09-15 16:11:19 PDT", "Port": 7101, "Log": false},
-{"Status": "online", "Name": "Odin", "Address": "128.241.94.47", "Source": "Redis", "Time": "2015-09-15 16:11:19 PDT", "Port": 7204, "Log": false},
-{"Status": "online", "Name": "Freyja", "Address": "128.241.94.49", "Source": "Redis", "Time": "2015-09-15 16:11:19 PDT", "Port": 7204, "Log": false}]
+{"Status": "online", "Name": "Odin", "Address": "128.241.94.47", "Source": "Redis", "Time": "2015-09-15 16:11:19 PDT", "Port": 7204, "Log": false}]
 ```
 
 Each server has its own object containing:
